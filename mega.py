@@ -1,0 +1,66 @@
+import requests
+import sys
+
+# [-11] link exists
+
+# [-9] or [-16] = The folder link you are trying to access is no longer available.
+# THis could be due to the following reasons:
+# The folder link has been removed because of a ToS/AUP violation
+# Invalid URL - the link you are trying to access does not exist
+# The folder link has been disabled by the user
+		
+# [-6] This folder/file was reported to contain objectionable content.
+# such as Child Exploitation Material, Violent Extremism, or Bestiality.
+# The link creator's account has been closed and their full details, 
+# including IP address, have been provided to the authorities.
+
+# Types of links
+# https://mega.nz/#F!ABcD1E2F!gHiJ23k-LMno45PqrSTUvw
+# https://mega.nz/file/Wbgh0QwS#qXUOLJdBgV9hMLQNOldsAOfqTq6yvJywPBWjqgUQJsU
+# https://mega.nz/folder/HlEU3C6C#ZIZaLG1PMgiIjS5U3KljDg
+# https://mega.nz/folder/TUUiHAgZ#Zce-2IUts3TiCVg_SCVsqQ/folder/PJU2kCbJ
+
+def check(id):
+
+	url = 'https://eu.api.mega.co.nz/cs'
+
+	# data to send
+	v1 = '[{"a":"g", "g":1, "ssl":0, "p": "' + id + '"}]'
+
+	# post request
+	resp = requests.post('https://eu.api.mega.co.nz/cs', data=v1)
+	
+	# print the status
+	if (resp.text == '[-6]' or resp.text == '[-9]' or resp.text == '[-16]'):
+		print(resp.text + ":  offline\n")
+	elif (resp.text == '[-11]'):
+		print(resp.text + ":  online\n")
+	else:
+		print("Not recognized status code\n")
+
+
+if __name__ == "__main__":
+	
+	file = sys.argv[1]
+	
+	# read file and compile links into list
+	f = open(file, "r")
+	list1 = f.read().splitlines()
+	
+	for link in list1:
+	
+		# check if link has two '!'
+		if (link.count('!') == 2):
+			id = link.split('!')[1]
+		else:
+			# find the location of the hash
+			hash_location = link.find("#")
+		
+			# remove irrelevant chars
+			stripped1 = link.split('#', 1)[0]
+			id = stripped1.split("/")[-1]
+		
+		print(id)
+		
+		# check it
+		check(id)
