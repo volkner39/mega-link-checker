@@ -14,8 +14,14 @@ import sys
 # The link creator's account has been closed and their full details, 
 # including IP address, have been provided to the authorities.
 
+# OR
+
+# The link is unavailable as the user's account has been closed for gross violation of MEGA's Terms of Service.
+
 # Types of links
+# https://mega.nz/file/1ehgSSpD%22%22
 # https://mega.nz/#F!ABcD1E2F!gHiJ23k-LMno45PqrSTUvw
+# https://mega.nz/#!nUJwkIaA!OcSUiyCG8_Iimh5iqQ_GQZJDEPg3Tzz32U0b-V-6-tY
 # https://mega.nz/file/Wbgh0QwS#qXUOLJdBgV9hMLQNOldsAOfqTq6yvJywPBWjqgUQJsU
 # https://mega.nz/folder/HlEU3C6C#ZIZaLG1PMgiIjS5U3KljDg
 # https://mega.nz/folder/TUUiHAgZ#Zce-2IUts3TiCVg_SCVsqQ/folder/PJU2kCbJ
@@ -33,15 +39,23 @@ def check(id):
 	# print the status
 	if (resp.text == '[-6]' or resp.text == '[-9]' or resp.text == '[-16]'):
 		print(resp.text + ":  offline\n")
+		return 1
 	elif (resp.text == '[-11]'):
 		print(resp.text + ":  online\n")
+		return 0
 	else:
 		print("Not recognized status code\n")
+		return 0
 
 
 if __name__ == "__main__":
+
+	to_keep = []
 	
-	file = sys.argv[1]
+	if sys.argv[1] == "-d":
+		file = sys.argv[2]
+	else:
+		file = sys.argv[1]
 	
 	# read file and compile links into list
 	f = open(file, "r")
@@ -62,5 +76,15 @@ if __name__ == "__main__":
 		
 		print(id)
 		
-		# check it
-		check(id)
+		# check it and keep track of ones that are online
+		if (check(id) != 1):
+			to_keep.append(link)
+	
+	f.close()
+	
+	# start deleting offline links (if -d is given) in the original text file
+	if (sys.argv[1] == "-d"):
+		with open(file, "w+") as f1:
+			for x in sorted(to_keep):
+				f1.write(x + '\n')
+			f1.close()
