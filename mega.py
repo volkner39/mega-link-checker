@@ -25,6 +25,7 @@ import sys
 # https://mega.nz/file/Wbgh0QwS#qXUOLJdBgV9hMLQNOldsAOfqTq6yvJywPBWjqgUQJsU
 # https://mega.nz/folder/HlEU3C6C#ZIZaLG1PMgiIjS5U3KljDg
 # https://mega.nz/folder/TUUiHAgZ#Zce-2IUts3TiCVg_SCVsqQ/folder/PJU2kCbJ
+# https://mega.nz/#F!Q6QFVKSQ!FalLuue3wOJJoRUny8KTfA!I2RgDAga
 
 def check(id):
 
@@ -63,22 +64,23 @@ if __name__ == "__main__":
 	
 	for link in list1:
 	
-		# check if link has two '!'
-		if (link.count('!') == 2):
-			id = link.split('!')[1]
-		else:
-			# find the location of the hash
-			hash_location = link.find("#")
+		if link != "":
+			# check if link has atleast two '!'
+			if (link.count('!') >= 2):
+				id = link.split('!')[1]
+			else:
+				# find the location of the hash
+				hash_location = link.find("#")
 		
-			# remove irrelevant chars
-			stripped1 = link.split('#', 1)[0]
-			id = stripped1.split("/")[-1]
+				# remove irrelevant chars
+				stripped1 = link.split('#', 1)[0]
+				id = stripped1.split("/")[-1]
 		
-		print(id)
+			print(id)
 		
-		# check it and keep track of ones that are online
-		if (check(id) != 1):
-			to_keep.append(link)
+			# check it and keep track of ones that are online
+			if (check(id) != 1):
+				to_keep.append(link)
 	
 	f.close()
 	
